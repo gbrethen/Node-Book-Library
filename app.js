@@ -2,15 +2,33 @@ var express = require('express');
 
 var app = express();
 
-var port = 5000;
+var port = process.env.PORT || 5000;
+
+var nav = [
+    {
+        Link: '/Books',
+        Text: 'Books'
+    },
+    {
+        Link: './Authors',
+        Text: 'Authors'
+    }
+]
+
+var bookRouter = require('./src/routes/bookRoutes')(nav);
 
 // static files first
 app.use(express.static('public'));
-app.use(express.static('src/views'));
+app.set('views', './src/views');
+
+app.set('view engine', 'ejs');
 
 // routes next
+
+app.use('/Books', bookRouter);
+
 app.get('/', function (req, res) {
-    res.send('Hello Greg!');
+    res.render('index', {title: 'My Book Library', nav: [{Link: '/Books', Text: 'Books'}, {Link: './Authors', Text: 'Authors'}]});
 });
 
 app.get('/books', function (req, res) {
